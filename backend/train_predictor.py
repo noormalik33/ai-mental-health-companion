@@ -1,52 +1,65 @@
-import pandas as pd
-import numpy as np
 import os
+import pandas as pd
+import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
-import joblib
+from sklearn.metrics import classification_report, accuracy_score
 
-# 1. Define the correct path to the CSV file
-csv_path = os.path.join("dataset", "Student Mental health", "Student Mental health.csv")
+# Define base directory and paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATASET_PATH = os.path.join(BASE_DIR, "dataset", "Student Mental health", "Student Mental health.csv")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "mental_health_model.pkl")
 
-print("Reading dataset from:", csv_path)
+print(f"Reading dataset from: {DATASET_PATH}")
 
-# 2. Load the data using pandas
-df = pd.read_csv(csv_path)
+if not os.path.exists(DATASET_PATH):
+    print(f"❌ Error: Dataset not found at {DATASET_PATH}")
+    exit()
 
-# Clean column names (remove leading/trailing spaces)
+# Load dataset
+df = pd.read_csv(DATASET_PATH)
+
+# Clean column names (strip trailing spaces)
 df.columns = df.columns.str.strip()
 
-# 3. Preprocessing: Convert Text columns into Numbers using LabelEncoder
-le = LabelEncoder()
+# Dynamically find columns using keywords to avoid KeyError
+gender_col = [c for c in df.columns if 'gender' in c.lower()][0]
+anxiety_col = [c if 'anxiety' in c.lower() else None for c in df.columns]
+anxiety_col = [c for c in anxiety_col if c is not None][0]
+panic_col = [c if 'panic' in c.lower() else None for c in df.columns]
+panic_col = [c for c in panic_col if c is not None][0]
+treatment_col = [c if 'treatment' in c.lower() else None for c in df.columns]
+treatment_col = [c for c in treatment_col if c is not None][0]
+age_col = [c for c in df.columns if 'age' in c.lower()][0]
 
-# We will predict if the user has Depression risk based on other factors
-df['Gender'] = le.fit_transform(df['Choose your gender'])
-df['Anxiety_Status'] = le.fit_transform(df['Do you have Anxiety?'])
-df['Panic_Status'] = le.fit_transform(df['Do you have Panic attack?'])
+# Encode categorical values to numeric using the dynamically found columns
+df[gender_col] = df[gender_col].map({'Female': 0, 'Male': 1}).fillna(0).astype(int)
+df[anxiety_col] = df[anxiety_col].map({'No': 0, 'Yes': 1}).fillna(0).astype(int)
+df[panic_col] = df[panic_col].map({'No': 0, 'Yes': 1}).fillna(0).astype(int)
+df[treatment_col] = df[treatment_col].map({'No': 0, 'Yes': 1}).fillna(0).astype(int)
 
-# Target variable (What we want to predict)
-df['Depression_Risk'] = le.fit_transform(df['Do you have Depression?'])
+# Features and Target
+X = df[[age_col, gender_col, anxiety_col, panic_col]]
+y = df[treatment_col]
 
-# 4. Select Features (X) and Target (y)
-X = df[['Age', 'Gender', 'Anxiety_Status', 'Panic_Status']]
-y = df['Depression_Risk']
-
-# Drop rows with missing values if any
-X = X.fillna(X.mean())
-
-# 5. FIXED: Changed 'test_test_size' to 'test_size'
+# Split data into train and test sets (80% train, 20% test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-print(f"Training set size: {X_train.shape[0]} rows")
+print(f"Training set size: {len(X_train)} rows, Test set size: {len(X_test)} rows")
 
-# 6. Initialize and Train the Machine Learning Model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+# Train Random Forest Model
+model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
-print("Machine Learning model trained successfully!")
 
-# 7. FIXED: Save securely with an absolute directory path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-model_output_path = os.path.join(current_dir, "mental_health_model.pkl")
-joblib.dump(model, model_output_path)
-print(f"Model saved securely at: {model_output_path}")
+# --- Evaluate Model ---
+y_pred = model.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+
+print("\n📊 Model Training Evaluation:")
+print(f"🎯 Overall Accuracy: {acc:.2f} (yaani {acc*100:.0f}%)")
+print("\n📝 Detailed Classification Report:")
+print(classification_report(y_test, y_pred))
+
+# Save the trained model
+joblib.dump(model, MODEL_SAVE_PATH)
+print(f"Model saved securely at: {MODEL_SAVE_PATH}")
