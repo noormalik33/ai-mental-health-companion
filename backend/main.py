@@ -94,8 +94,7 @@ def predict_risk(data: AssessmentInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# --- Endpoint 2: Journal Emotion NLP Analyzer (BERT Integrated) ---
+# --- Endpoint 2: Journal Emotion NLP Analyzer (BERT Integrated + Safety Guard) ---
 @app.post("/api/analyze-journal")
 def analyze_journal(data: JournalInput):
     if emotion_classifier is None:
@@ -105,9 +104,18 @@ def analyze_journal(data: JournalInput):
         raise HTTPException(status_code=400, detail="Journal text cannot be empty.")
     
     try:
-        # Pass raw text directly to BERT pipeline
+        # 1. Base Text processing
+        user_text = data.text.lower().strip()
+        
+        # 2. Model Prediction chalaein
         predictions = emotion_classifier(data.text)
         detected_emotion = predictions[0]['label']
+        
+        # 🔥 3. Logical Safety Guard for Negative Phrases (Bypass Server Cache/Bias)
+        # Agar text mein negative combinations hon to emotion ko direct sadness par override karein
+        negative_keywords = ["not feeling good", "not good", "feeling bad", "sad", "depressed", "unhappy"]
+        if any(keyword in user_text for keyword in negative_keywords):
+            detected_emotion = "sadness"
         
         coping_tips = {
             "sadness": "It's completely okay to feel down. Try jotting down three minor details you feel grateful for right now.",
