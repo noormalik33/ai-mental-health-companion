@@ -67,17 +67,21 @@ def predict_risk(data: AssessmentInput):
         return {"status": "error", "message": "ML Model is not loaded on server."}
     
     try:
-        # 1. Model Prediction chalaein
+        # 1. Model Prediction chalaein (Features list standard formats mein pass karein)
         features = [[data.age, data.gender, data.anxiety, data.panic_attacks]]
         prediction = predictor_model.predict(features)[0]
         
-        # 2. Base status set karein
+        # 2. Base status set karein model ke mutabiq
         risk_status = "High Risk" if prediction == 1 else "Low Risk"
         
-        # 🔥 3. Logical Safety Guard (Critical Override for Clinical Safety)
-        # Agar user ko anxiety AUR panic attacks dono hain, to dataset ke small size 
-        # ki wajah se model ko galat predict nahi karne dena, direct High Risk set karna hai.
-        if data.anxiety == 1 and data.panic_attacks == 1:
+        # 🔥 3. Robust Logical Safety Guards (Bypassing Small Dataset/SMOTE Anomalies)
+        
+        # Guard A: Agar anxiety AUR panic attacks dono zero hain, to model noise ko strict bypass karein -> Low Risk
+        if data.anxiety == 0 and data.panic_attacks == 0:
+            risk_status = "Low Risk"
+            
+        # Guard B: Agar anxiety AUR panic attacks dono high (1) hain, to hamesha -> High Risk
+        elif data.anxiety == 1 and data.panic_attacks == 1:
             risk_status = "High Risk"
             
         recommendation = (
