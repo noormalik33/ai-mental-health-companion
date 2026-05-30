@@ -17,9 +17,9 @@ app.add_middleware(
 
 # Define directories and absolute file paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PREDICTOR_MODEL_PATH = os.path.join(BASE_DIR, "mental_health_model.pkl")
-NLP_MODEL_PATH = os.path.join(BASE_DIR, "emotion_nlp_model.pkl")
-VECTORIZER_PATH = os.path.join(BASE_DIR, "emotion_vectorizer.pkl")
+PREDICTOR_MODEL_PATH = os.path.join(BASE_DIR, "models", "mental_health_model.pkl")
+NLP_MODEL_PATH = os.path.join(BASE_DIR, "models", "emotion_nlp_model.pkl")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "emotion_vectorizer.pkl")
 
 # Initialize models as None global variables
 predictor_model = None
