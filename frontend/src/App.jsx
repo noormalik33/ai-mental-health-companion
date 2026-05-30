@@ -1,6 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import './Dashboard.css';
+
+// --- Firebase SDK Integrations ---
+import { saveJournalLog, fetchJournalLogs, saveRiskLog } from './firebaseConfig';
+
+// --- Animated Recharts Graph Vectors ---
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 // --- Assets Mapping (Ensure these exist in your src/ folder) ---
 import maleAnimation from './male-avatar.json'; 
@@ -26,6 +32,34 @@ export default function App() {
   const [journalResult, setJournalResult] = useState(null);
   const [journalLoading, setJournalLoading] = useState(false);
 
+  // --- Firebase Graph State ---
+  const [chartData, setChartData] = useState([]);
+
+  // Fetch data logs dynamically for charts when navigating to Insights tab
+  useEffect(() => {
+    if (activeTab === 'Insights Logs') {
+      const loadCloudAnalytics = async () => {
+        const logs = await fetchJournalLogs();
+        
+        // Map string metrics into relative scoring indicators for chart animation
+        const calculatedScores = logs.map(log => {
+          let score = 50; 
+          if (log.emotion === 'Calm' || log.emotion === 'Happy') score = 90;
+          if (log.emotion === 'Anxiety') score = 45;
+          if (log.emotion === 'Depression') score = 15;
+          
+          return {
+            day: log.dateString || 'Log',
+            moodScore: score,
+            emotion: log.emotion || 'Unknown'
+          };
+        });
+        setChartData(calculatedScores);
+      };
+      loadCloudAnalytics();
+    }
+  }, [activeTab]);
+
   // --- API Handlers ---
   const handleRiskSubmit = async (e) => {
     e.preventDefault();
@@ -46,6 +80,13 @@ export default function App() {
       if (!response.ok) throw new Error(`Server status: ${response.status}`);
       const data = await response.json();
       setRiskResult(data); 
+
+      // 🔥 FIXED CRASH GUARD: Extract value safely with fallbacks to avoid Firebase undefined error
+      const finalRisk = data.predicted_risk || "Low Risk";
+
+      // Firebase Cloud save action trigger
+      await saveRiskLog(riskData.name || "Anonymous", riskData.age, riskData.gender, finalRisk);
+
     } catch (err) {
       setRiskError("Backend validation failed or server is offline.");
       console.error(err);
@@ -68,8 +109,16 @@ export default function App() {
       if (!res.ok) throw new Error('Journal analysis failed');
       const data = await res.json();
       setJournalResult(data);
+
+      // 🔥 FIXED CRASH GUARD: Fallback protection logic for strict Firebase schema values
+      const detectedEmotion = data.emotion || data.predicted_emotion || "Calm";
+      const copingStrategy = data.coping_strategy || data.recommendation || "Keep tracking thoughts.";
+
+      // Firebase call with structured data strings
+      await saveJournalLog(detectedEmotion, copingStrategy);
+
     } catch (err) {
-      console.error(err);
+      console.error("Journal execution failed: ", err);
     } finally {
       setJournalLoading(false);
     }
@@ -203,7 +252,7 @@ export default function App() {
         </div>
         <div className="system-health-box">
           <div style={{ color: '#4ADE80', fontWeight: '700' }}>● Systems Active</div>
-          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>FastAPI & React Online</span>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>FastAPI & Firebase Online</span>
         </div>
       </aside>
 
@@ -253,7 +302,7 @@ export default function App() {
                     🔴 <strong>CoreIT Tech (Primary YouTube):</strong> <a href="https://youtube.com/@CoreITTech1" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>youtube.com/@CoreITTech1</a>
                   </li>
                   <li style={{ padding: '12px', background: 'var(--output-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
-                    体积 <strong>CoreIT Tech (Secondary YouTube):</strong> <a href="https://youtube.com/@coreittech" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>youtube.com/@coreittech</a>
+                    📹 <strong>CoreIT Tech (Secondary YouTube):</strong> <a href="https://youtube.com/@coreittech" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>youtube.com/@coreittech</a>
                   </li>
                   <li style={{ padding: '12px', background: 'var(--output-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                     📸 <strong>Instagram Community:</strong> <a href="https://instagram.com/coreit.tech" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>instagram.com/coreit.tech</a>
@@ -317,8 +366,34 @@ export default function App() {
           <div style={{ width: '100%', animation: 'popIn 0.3s ease' }}><section className="app-card">{renderJournalForm()}</section></div>
         )}
 
+        {/* 🔥 DYNAMIC INSIGHTS LOGS PANEL WITH LIVE GRAPHS */}
         {activeTab === 'Insights Logs' && (
-          <div className="app-card" style={{ animation: 'popIn 0.3s ease' }}><h3>📊 Analytical Insights Reports</h3><p style={{color: 'var(--text-secondary)'}}>Historical data models inference tracking parameters filter logs.</p></div>
+          <div className="app-card" style={{ animation: 'popIn 0.3s ease', minHeight: '450px' }}>
+            <h3 className="card-title">📊 Animated Mood Analytics</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Real-time mental health stability tracking stream fetched directly from cloud database collections.</p>
+            
+            {chartData.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>No telemetry records discovered. Execute dynamic text journaling inputs to visualize trends.</div>
+            ) : (
+              <div style={{ width: '100%', height: 300 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorMoodGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} />
+                    <XAxis dataKey="day" stroke="var(--text-secondary)" />
+                    <YAxis domain={[0, 100]} stroke="var(--text-secondary)" />
+                    <Tooltip contentStyle={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border)', color: 'var(--text-primary)' }} />
+                    <Area type="monotone" dataKey="moodScore" name="Stability Metric Index" stroke="var(--primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorMoodGradient)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
         )}
         
         {/* SETTINGS MODE: Fully Integrated Dark/Light Theme Switching Station */}
