@@ -13,6 +13,7 @@ import calmJournalAnimation from './calm-peaceful.json';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Dashboard');
+  const [isDarkMode, setIsDarkMode] = useState(false); // Dynamic Theme Hook
 
   // --- Risk Form States ---
   const [riskData, setRiskData] = useState({ name: '', age: '', gender: '0', anxiety: '0', panic_attacks: '0' });
@@ -74,7 +75,7 @@ export default function App() {
     }
   };
 
-  // --- 🛠️ Render Helpers for Core AI Forms (100% Intact) ---
+  // --- 🛠️ Render Helpers (Focus, Execution, and Animation Safe) ---
   const renderRiskForm = () => {
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
@@ -83,11 +84,17 @@ export default function App() {
           <form onSubmit={handleRiskSubmit}>
             <div className="field-group">
               <label>Full Name</label>
-              <input type="text" required className="text-input" placeholder="Enter your name" value={riskData.name} onChange={(e) => setRiskData({...riskData, name: e.target.value})} />
+              <input 
+                type="text" required className="text-input" placeholder="Enter your name"
+                value={riskData.name} onChange={(e) => setRiskData({...riskData, name: e.target.value})} 
+              />
             </div>
             <div className="field-group">
               <label>Age Vector</label>
-              <input type="number" required className="text-input" placeholder="e.g. 24" value={riskData.age} onChange={(e) => setRiskData({...riskData, age: e.target.value})} />
+              <input 
+                type="number" required className="text-input" placeholder="e.g. 24"
+                value={riskData.age} onChange={(e) => setRiskData({...riskData, age: e.target.value})} 
+              />
             </div>
             <div className="field-group">
               <label>Biological Gender</label>
@@ -115,19 +122,30 @@ export default function App() {
             </button>
           </form>
           
-          {riskError && <div className="output-node" style={{ borderLeft: '5px solid #EF4444', color: '#EF4444', marginTop: '20px' }}>{riskError}</div>}
+          {riskError && (
+            <div className="output-node" style={{ borderLeft: '5px solid #EF4444', color: '#EF4444', marginTop: '20px' }}>
+              {riskError}
+            </div>
+          )}
+
           {riskResult && (
-            <div className="output-node" style={{ borderLeft: riskResult.predicted_risk === 'High Risk' ? '6px solid var(--accent)' : '6px solid #22C55E', marginTop: '20px' }}>
-              <div className="output-header" style={{ color: riskResult.predicted_risk === 'High Risk' ? 'var(--accent)' : '#22C55E' }}>Patient: {riskData.name || 'Anonymous'} — Result: {riskResult.predicted_risk}</div>
+            <div className="output-node risk-high-override" style={{ borderLeft: riskResult.predicted_risk === 'High Risk' ? '6px solid var(--accent)' : '6px solid #22C55E', marginTop: '20px' }}>
+              <div className="output-header" style={{ color: riskResult.predicted_risk === 'High Risk' ? 'var(--accent)' : '#22C55E' }}>
+                Patient: {riskData.name || 'Anonymous'} — Result: {riskResult.predicted_risk}
+              </div>
               <p className="output-desc">{riskResult.recommendation}</p>
+              
               <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
                 <Player autoplay loop src={riskResult.predicted_risk === 'High Risk' ? highRiskAnimation : lowRiskAnimation} style={{ height: '100px', width: '100px' }} />
               </div>
             </div>
           )}
         </div>
+        
         <div style={{ width: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingLeft: '30px', marginTop: '20px' }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '10px', textAlign: 'center' }}>👤 {riskData.name ? `${riskData.name}'s Avatar` : "Live Avatar State"}</span>
+          <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '10px', textAlign: 'center', letterSpacing: '0.5px' }}>
+            👤 {riskData.name ? `${riskData.name}'s Avatar` : "Live Avatar State"}
+          </span>
           <Player autoplay loop src={riskData.gender === '1' ? maleAnimation : femaleAnimation} style={{ height: '200px', width: '200px' }} />
         </div>
       </div>
@@ -141,14 +159,24 @@ export default function App() {
         <form onSubmit={handleJournalSubmit}>
           <div className="field-group">
             <label>Daily Thought Narrative</label>
-            <textarea className="textarea-input" required placeholder="Type out your thoughts, narrative, or emotional reflections here..." value={journalText} onChange={(e) => setJournalText(e.target.value)} />
+            <textarea 
+              className="textarea-input" required 
+              placeholder="Type out your thoughts, narrative, or emotional reflections here..." 
+              value={journalText} onChange={(e) => setJournalText(e.target.value)} 
+            />
           </div>
-          <button type="submit" className="submit-btn" disabled={journalLoading || !journalText.trim()}><span>🚀</span> {journalLoading ? "Extracting Layers..." : "Analyze Sentiment Context"}</button>
+          <button type="submit" className="submit-btn" disabled={journalLoading || !journalText.trim()}>
+            <span>🚀</span> {journalLoading ? "Extracting Layers..." : "Analyze Sentiment Context"}
+          </button>
         </form>
+
         {journalResult && (
           <div className="output-node" style={{ borderLeft: '6px solid var(--primary)', marginTop: '20px' }}>
-            <div className="output-header" style={{ color: 'var(--primary)' }}>Detected Emotion: {journalResult.emotion}</div>
+            <div className="output-header" style={{ color: 'var(--primary)' }}>
+              Detected Emotion: {journalResult.emotion}
+            </div>
             <p className="output-desc"><strong>Coping Strategy:</strong> {journalResult.coping_strategy}</p>
+            
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
               <Player autoplay loop src={journalResult.emotion === 'Depression' || journalResult.emotion === 'Anxiety' ? highStressJournalAnimation : calmJournalAnimation} style={{ height: '100px', width: '100px' }} />
             </div>
@@ -159,7 +187,7 @@ export default function App() {
   };
 
   return (
-    <div className="dashboard-wrapper">
+    <div className={`dashboard-wrapper ${isDarkMode ? 'dark-mode' : ''}`}>
       
       {/* ========================== SIDEBAR DOCK ========================== */}
       <aside className="sidebar-dock">
@@ -195,14 +223,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* --- DYNAMIC ROUTER INCLUDING PREMIUM JOINT WELCOME HUB --- */}
+        {/* --- DYNAMIC HUB ROUTER --- */}
         
         {activeTab === 'Dashboard' && (
           <div style={{ animation: 'popIn 0.3s ease', display: 'flex', flexDirection: 'column', gap: '30px', width: '100%' }}>
             
             {/* Main Welcome Hero Card */}
-            <section className="app-card" style={{ background: 'rgba(255,255,255,0.96)' }}>
-              <h2 style={{ color: 'var(--primary)', fontSize: '2rem', fontWeight: '800', marginBottom: '15px', borderBottom: '2px solid rgba(33,94,97,0.1)', paddingBottom: '10px' }}>
+            <section className="app-card">
+              <h2 style={{ color: 'var(--primary)', fontSize: '2rem', fontWeight: '800', marginBottom: '15px', borderBottom: '2px solid var(--border)', paddingBottom: '10px' }}>
                 👋 Welcome to Our Tech Hub!
               </h2>
               <p style={{ color: 'var(--text-primary)', fontSize: '1.05rem', lineHeight: '1.7', marginBottom: '15px', fontWeight: '500' }}>
@@ -216,31 +244,26 @@ export default function App() {
               </p>
             </section>
 
-            {/* Split Media & Community Links Section */}
+            {/* Content Split: Channels & Quick Mode Badge */}
             <div className="content-grid">
-              
-              {/* Left Side Channel Links */}
               <section className="app-card">
                 <h3 className="card-title">🎥 Tech Community & Content Channels</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.95rem' }}>Join our digital community where we share tech insights, design tips, and development workflows:</p>
-                
                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <li style={{ padding: '12px', background: '#F9FAFB', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)' }}>
+                  <li style={{ padding: '12px', background: 'var(--output-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                     🔴 <strong>CoreIT Tech (Primary YouTube):</strong> <a href="https://youtube.com/@CoreITTech1" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>youtube.com/@CoreITTech1</a>
                   </li>
-                  <li style={{ padding: '12px', background: '#F9FAFB', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)' }}>
-                    📹 <strong>CoreIT Tech (Secondary YouTube):</strong> <a href="https://youtube.com/@coreittech" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>youtube.com/@coreittech</a>
+                  <li style={{ padding: '12px', background: 'var(--output-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                    体积 <strong>CoreIT Tech (Secondary YouTube):</strong> <a href="https://youtube.com/@coreittech" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600', textDecoration: 'none' }}>youtube.com/@coreittech</a>
                   </li>
-                  <li style={{ padding: '12px', background: '#F9FAFB', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)' }}>
+                  <li style={{ padding: '12px', background: 'var(--output-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                     📸 <strong>Instagram Community:</strong> <a href="https://instagram.com/coreit.tech" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>instagram.com/coreit.tech</a>
                   </li>
-                  <li style={{ padding: '12px', background: '#F9FAFB', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)' }}>
+                  <li style={{ padding: '12px', background: 'var(--output-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
                     🔵 <strong>Facebook Page:</strong> <a href="https://facebook.com/share/1AmgLDUnc9/" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>facebook.com/share/1AmgLDUnc9/</a>
                   </li>
                 </ul>
               </section>
 
-              {/* Right Side Overview Hint Badge */}
               <section className="app-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', background: 'linear-gradient(135deg, rgba(33,94,97,0.05), rgba(254,127,45,0.05))' }}>
                 <span style={{ fontSize: '3rem' }}>🚀</span>
                 <h4 style={{ color: 'var(--primary)', fontSize: '1.3rem', fontWeight: '700', marginTop: '15px' }}>Clinical Assessment Mode</h4>
@@ -254,24 +277,24 @@ export default function App() {
             <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem', fontWeight: '800', marginTop: '10px' }}>💼 Meet the Developers</h3>
             <div className="content-grid">
               
-              {/* Ghulam Qadir Bio Card */}
+              {/* Ghulam Qadir Portfolio */}
               <section className="app-card" style={{ borderTop: '5px solid var(--accent)' }}>
                 <h4 style={{ color: 'var(--text-primary)', fontSize: '1.3rem', fontWeight: '700', marginBottom: '4px' }}>Ghulam Qadir</h4>
-                <span style={{ color: 'var(--accent)', fontWeight: '700', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Backend Specialist & Cross-Platform Developer</span>
+                <span style={{ color: 'var(--accent)', fontWeight: '700', fontSize: '0.9rem', textTransform: 'uppercase' }}>Backend Specialist & Cross-Platform Developer</span>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '12px', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '20px' }}>
-                  A goal-oriented IT student specializing in robust backend logic, responsive web engineering, and native/cross-platform mobile app development. Experienced in building seamless UI/UX and integrating secure services for real-world impact.
+                  A goal-oriented IT student specializing in robust backend logic, responsive web engineering, and native/cross-platform mobile app development.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
                   <div>🌐 <strong>Portfolio:</strong> <a href="https://ghulam-qadir.netlify.app" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>ghulam-qadir.netlify.app</a></div>
                   <div>💻 <strong>GitHub:</strong> <a href="https://github.com/G-Qadir9988" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>github.com/G-Qadir9988</a></div>
-                  <div>🤝 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/ghulam-qadir-07a982365" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>linkedin.com/in/g-qadir</a></div>
+                  <div>🤝 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/ghulam-qadir-07a982365" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>linkedin.com/in/ghulam-qadir</a></div>
                 </div>
               </section>
 
-              {/* Noor Malik Bio Card */}
+              {/* Noor Malik Portfolio */}
               <section className="app-card" style={{ borderTop: '5px solid var(--primary)' }}>
                 <h4 style={{ color: 'var(--text-primary)', fontSize: '1.3rem', fontWeight: '700', marginBottom: '4px' }}>Noor Malik</h4>
-                <span style={{ color: 'var(--primary)', fontWeight: '700', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Full-Stack Developer & DevOps Specialist</span>
+                <span style={{ color: 'var(--primary)', fontWeight: '700', fontSize: '0.9rem', textTransform: 'uppercase' }}>Full-Stack Developer & DevOps Specialist</span>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '12px', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '20px' }}>
                   An academic high achiever and freelance engineer focused on the MERN stack, modular architecture, Infrastructure as Code (IaC), and continuous integration pipelines.
                 </p>
@@ -279,16 +302,13 @@ export default function App() {
                   <div>🌐 <strong>Portfolio:</strong> <a href="https://noor-malik-portfolio.netlify.app" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>noor-malik-portfolio.netlify.app</a></div>
                   <div>💻 <strong>GitHub:</strong> <a href="https://github.com/noormalik33" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>github.com/noormalik33</a></div>
                   <div>🤝 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/noormalik33" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>linkedin.com/in/noormalik33</a></div>
-                  <div>🚀 <strong>Fiverr:</strong> <a href="https://fiverr.com/noormalik_33" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600' }}>fiverr.com/noormalik_33</a></div>
-                  <div>🏢 <strong>Appverse:</strong> <a href="https://appverse-technologies.com/noorulain-malik/" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', fontWeight: '600' }}>appverse Profile</a></div>
                 </div>
               </section>
-
             </div>
           </div>
         )}
 
-        {/* Dedicated view loops for AI Forms remain completely intact inside sub-tabs */}
+        {/* Dedicated view panels for core AI functional processing loops */}
         {activeTab === 'Risk Assessment' && (
           <div style={{ width: '100%', animation: 'popIn 0.3s ease' }}><section className="app-card">{renderRiskForm()}</section></div>
         )}
@@ -298,11 +318,27 @@ export default function App() {
         )}
 
         {activeTab === 'Insights Logs' && (
-          <div className="app-card" style={{ animation: 'popIn 0.3s ease' }}><h3>📊 Analytical Insights Reports</h3><p style={{color: 'var(--text-secondary)'}}>Historical trends tracking metrics and system data models filter logs.</p></div>
+          <div className="app-card" style={{ animation: 'popIn 0.3s ease' }}><h3>📊 Analytical Insights Reports</h3><p style={{color: 'var(--text-secondary)'}}>Historical data models inference tracking parameters filter logs.</p></div>
         )}
         
+        {/* SETTINGS MODE: Fully Integrated Dark/Light Theme Switching Station */}
         {activeTab === 'Settings' && (
-          <div className="app-card" style={{ animation: 'popIn 0.3s ease' }}><h3>⚙️ System Core Settings</h3><p style={{color: 'var(--text-secondary)'}}>Manage deep endpoints configurations and model Smote toggle boundaries states.</p></div>
+          <section className="app-card" style={{ animation: 'popIn 0.3s ease' }}>
+            <h3 className="card-title">⚙️ System Core Settings</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px', background: 'var(--output-bg)', borderRadius: '18px', border: '1px solid var(--border)' }}>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700' }}>Interface Canvas Theme</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0 0' }}>Toggle between high-contrast light mode and specialized low-light dev-slate mode.</p>
+              </div>
+              <button 
+                onClick={() => setIsDarkMode(!isDarkMode)} 
+                className="submit-btn" 
+                style={{ width: '180px', background: isDarkMode ? 'var(--primary)' : 'var(--accent)', boxShadow: 'none' }}
+              >
+                {isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode'}
+              </button>
+            </div>
+          </section>
         )}
       </main>
     </div>

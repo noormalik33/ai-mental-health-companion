@@ -1,25 +1,45 @@
 /* ==========================================================================
    AI Mental Health Companion - Premium Full Screen Dashboard
+   Dynamic Variable Overhaul (Light & Dark Theme Compliant)
    ========================================================================== */
 
 :root {
-
     --primary: #215E61;
     --primary-light: #2F7C80;
 
     --accent: #FE7F2D;
     --accent-hover: #E96C1C;
 
+    /* Light Theme Tokens */
     --background: #F5FBE6;
-    --card-bg: #FFFFFF;
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --top-nav-bg: rgba(255, 255, 255, 0.75);
 
     --text-primary: #163043;
     --text-secondary: #6B7280;
 
     --border: rgba(33, 94, 97, 0.08);
+    --input-bg: #FFFFFF;
+    --output-bg: #F9FAFB;
 
     --radius-xl: 24px;
     --radius-lg: 16px;
+}
+
+/* ==========================================================================
+   DARK THEME PALETTE DEFINITION
+   ========================================================================== */
+.dashboard-wrapper.dark-mode {
+    --background: #0F172A; /* Deep Space Slate Blue */
+    --card-bg: #1E293B;    /* Premium Muted Card Slate */
+    --top-nav-bg: rgba(30, 41, 59, 0.8);
+
+    --text-primary: #F8FAFC; 
+    --text-secondary: #94A3B8; 
+
+    --border: rgba(255, 255, 255, 0.1);
+    --input-bg: #0F172A;
+    --output-bg: #334155;
 }
 
 /* ==========================================================================
@@ -37,9 +57,13 @@ body {
     width: 100%;
     min-height: 100%;
     overflow-x: hidden;
-
     font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    transition: background-color .3s ease, color .3s ease;
+}
 
+/* Dynamic Ambient Radial Lighting */
+body {
     background:
         radial-gradient(
             circle at top left,
@@ -59,67 +83,50 @@ body {
    ========================================================================== */
 
 .dashboard-wrapper {
-
     min-height: 100vh;
     width: 100%;
-
     display: flex;
 }
 
 /* ==========================================================================
-   SIDEBAR
+   SIDEBAR DOCK SYSTEM
    ========================================================================== */
 
 .sidebar-dock {
-
     width: 290px;
     min-width: 290px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #215E61 0%,
-            #18484B 100%
-        );
-
+    background: linear-gradient(180deg, #215E61 0%, #18484B 100%);
     color: white;
-
     padding: 30px 20px;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     border-right: 1px solid rgba(255,255,255,.08);
+    box-shadow: 8px 0 40px rgba(0,0,0,.08);
+    transition: background .3s ease;
+}
 
-    box-shadow:
-        8px 0 40px rgba(0,0,0,.08);
+/* Theme Adjustment for Sidebar Background in Dark Mode */
+.dashboard-wrapper.dark-mode .sidebar-dock {
+    background: linear-gradient(180deg, #020617 0%, #0F172A 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo-section {
-
     display: flex;
     align-items: center;
     gap: 12px;
-
     font-size: 1.4rem;
     font-weight: 800;
-
     padding-bottom: 25px;
-
-    border-bottom:
-        1px solid rgba(255,255,255,.12);
+    border-bottom: 1px solid rgba(255,255,255,.12);
 }
 
 .nav-menu {
-
     display: flex;
     flex-direction: column;
-
     gap: 8px;
-
     margin-top: 25px;
-
     flex-grow: 1;
 }
 
@@ -133,32 +140,21 @@ body {
     color: rgba(255,255,255,.75);
     font-weight: 500;
     transition: all .25s ease;
-    user-select: none; /* Stops text highlighting on quick tab changes */
-}  transition: all .25s ease;
-
+    user-select: none; 
+}
 
 .nav-item:hover,
 .nav-item.active {
-
     background: rgba(255,255,255,.12);
-
     color: white;
-
     transform: translateX(4px);
 }
 
 .system-health-box {
-
-    background:
-        rgba(255,255,255,.06);
-
+    background: rgba(255,255,255,.06);
     border-radius: 16px;
-
     padding: 18px;
-
-    border:
-        1px solid rgba(255,255,255,.08);
-
+    border: 1px solid rgba(255,255,255,.08);
     backdrop-filter: blur(10px);
 }
 
@@ -167,18 +163,12 @@ body {
    ========================================================================== */
 
 .main-workspace {
-
     flex: 1;
-
     min-width: 0;
-
     padding: 30px;
-
     display: flex;
     flex-direction: column;
-
     gap: 30px;
-
     overflow-x: hidden;
 }
 
@@ -187,86 +177,59 @@ body {
    ========================================================================== */
 
 .top-navbar {
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     padding: 22px 30px;
-
-    background:
-        rgba(255,255,255,.75);
-
+    background: var(--top-nav-bg);
     backdrop-filter: blur(18px);
-
     border-radius: 22px;
-
-    border:
-        1px solid rgba(255,255,255,.5);
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.04);
-
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 25px rgba(0,0,0,.04);
     position: sticky;
     top: 20px;
     z-index: 100;
+    transition: background-color .3s ease, border .3s ease;
 }
 
 .title-area h1 {
-
     color: var(--text-primary);
-
     font-size: 2rem;
-
     font-weight: 800;
 }
 
 .title-area p {
-
     color: var(--text-secondary);
-
     margin-top: 6px;
 }
 
 .badge-row {
-
     display: flex;
     gap: 12px;
 }
 
 .top-badge {
-
     display: flex;
     align-items: center;
     gap: 8px;
-
     padding: 12px 18px;
-
     border-radius: 50px;
-
-    background: white;
-
+    background: var(--input-bg);
     border: 1px solid var(--border);
-
     color: var(--text-primary);
-
     font-size: .9rem;
-
     font-weight: 600;
 }
 
 /* ==========================================================================
-   CONTENT GRID
+   CONTENT GRID SYSTEM (Strict Landscape Split Layout)
    ========================================================================== */
 
 .content-grid {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit,minmax(600px,1fr));
-
+    grid-template-columns: 1fr 1fr; /* Exact symmetrical landscape divide */
     gap: 30px;
+    width: 100%;
 }
 
 /* ==========================================================================
@@ -274,116 +237,74 @@ body {
    ========================================================================== */
 
 .app-card {
-
-    background:
-        rgba(255,255,255,.92);
-
+    background: var(--card-bg);
     backdrop-filter: blur(20px);
-
     border-radius: var(--radius-xl);
-
     padding: 32px;
-
-    border:
-        1px solid rgba(33,94,97,.08);
-
-    box-shadow:
-        0 10px 40px rgba(0,0,0,.05);
-
-    transition: .3s ease;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 40px rgba(0,0,0,.05);
+    transition: transform .3s ease, box-shadow .3s ease, background-color .3s ease;
+    width: 100%;
 }
 
 .app-card:hover {
-
     transform: translateY(-4px);
-
-    box-shadow:
-        0 20px 60px rgba(33,94,97,.12);
+    box-shadow: 0 20px 60px rgba(33,94,97,.12);
 }
 
 .card-title {
-
     display: flex;
     align-items: center;
     gap: 10px;
-
     font-size: 1.4rem;
-
     font-weight: 700;
-
     color: var(--primary);
-
     margin-bottom: 28px;
 }
 
 /* ==========================================================================
-   FORM
+   FORM CONTROLS
    ========================================================================== */
 
 .field-group {
-
     margin-bottom: 24px;
 }
 
 .field-group label {
-
     display: block;
-
     margin-bottom: 10px;
-
     font-size: .88rem;
-
     font-weight: 700;
-
     letter-spacing: .3px;
-
     color: var(--text-primary);
-
     text-transform: uppercase;
 }
 
 .text-input,
 .select-dropdown,
 .textarea-input {
-
     width: 100%;
-
     padding: 15px;
-
     border-radius: 16px;
-
-    background: white;
-
+    background: var(--input-bg);
     border: 2px solid transparent;
-
     font-size: 1rem;
-
     color: var(--text-primary);
-
-    box-shadow:
-        0 2px 10px rgba(0,0,0,.03);
-
-    transition: .25s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,.03);
+    transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease, background-color .3s ease;
 }
 
 .text-input:focus,
 .select-dropdown:focus,
 .textarea-input:focus {
-
     outline: none;
-
     border-color: var(--primary);
-
-    box-shadow:
-        0 0 0 5px rgba(33,94,97,.12);
-
+    box-shadow: 0 0 0 5px rgba(33,94,97,.12);
     transform: translateY(-1px);
 }
 
 .textarea-input {
-
     height: 180px;
-
     resize: none;
 }
 
@@ -392,51 +313,29 @@ body {
    ========================================================================== */
 
 .submit-btn {
-
     width: 100%;
-
     height: 58px;
-
     border: none;
-
     border-radius: 16px;
-
     cursor: pointer;
-
     color: white;
-
     font-size: 1rem;
-
     font-weight: 700;
-
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #FE7F2D,
-            #FF964F
-        );
-
-    box-shadow:
-        0 10px 25px rgba(254,127,45,.25);
-
-    transition: .25s ease;
+    background: linear-gradient(135deg, #FE7F2D, #FF964F);
+    box-shadow: 0 10px 25px rgba(254,127,45,.25);
+    transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .submit-btn:hover {
-
     transform: translateY(-2px);
-
-    box-shadow:
-        0 15px 35px rgba(254,127,45,.35);
+    box-shadow: 0 15px 35px rgba(254,127,45,.35);
 }
 
 .submit-btn:active {
-
     transform: scale(.98);
 }
 
@@ -445,144 +344,103 @@ body {
    ========================================================================== */
 
 .output-node {
-
     margin-top: 25px;
-
     padding: 24px;
-
     border-radius: 18px;
-
-    background: #F9FAFB;
-
-    border:
-        1px solid var(--border);
+    background: var(--output-bg);
+    border: 1px solid var(--border);
+    transition: background-color .3s ease;
 }
 
 .output-header {
-
     display: flex;
     align-items: center;
     gap: 10px;
-
     font-size: 1.15rem;
-
     font-weight: 700;
-
     color: var(--text-primary);
-
     margin-bottom: 15px;
 }
 
 .output-desc {
-
     padding: 14px;
-
     border-radius: 12px;
-
-    background: white;
-
-    border:
-        1px solid rgba(0,0,0,.03);
-
+    background: var(--input-bg);
+    border: 1px solid var(--border);
     color: var(--text-secondary);
-
     line-height: 1.7;
+    transition: background-color .3s ease;
 }
 
 /* ==========================================================================
-   HIGH RISK PANEL
+   HIGH RISK STATE INJECTOR
    ========================================================================== */
 
 .risk-high {
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(254,127,45,.08),
-            rgba(254,127,45,.02)
-        );
-
-    border-left:
-        6px solid var(--accent);
-
-    box-shadow:
-        0 10px 30px rgba(254,127,45,.08);
+    background: linear-gradient(135deg, rgba(254,127,45,.08), rgba(254,127,45,.02)) !important;
+    border-left: 6px solid var(--accent) !important;
+    box-shadow: 0 10px 30px rgba(254,127,45,.08);
 }
 
 /* ==========================================================================
-   TABLET
+   RESPONSIVE DESIGN BREAKPOINTS (Fixed Nesting & Overlaps)
    ========================================================================== */
 
-@media (max-width: 1200px) {
-
+@media (max-width: 1300px) {
     .content-grid {
+        grid-template-columns: 1fr; /* Dynamic flow drop for medium devices */
+    }
+}
 
+@media (max-width: 1200px) {
+    .content-grid {
         grid-template-columns: 1fr;
     }
 }
 
-/* ==========================================================================
-   MOBILE
-   ========================================================================== */
-
 @media (max-width: 900px) {
-
     .dashboard-wrapper {
-
         flex-direction: column;
     }
 
     .sidebar-dock {
-
         width: 100%;
         min-width: 100%;
     }
 
     .top-navbar {
-
         flex-direction: column;
         gap: 20px;
-
         align-items: flex-start;
     }
 
     .badge-row {
-
         flex-wrap: wrap;
     }
 
     .content-grid {
-    display: grid;
-    /* Force 2 equal columns on desktop screens, ignoring child pixel bloating */
-    grid-template-columns: 1fr 1fr; 
-    gap: 30px;
-    width: 100%;
-}
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ==========================================================================
-   LARGE SCREENS
+   LARGE WIDESCREENS RETINA DISPLAYS
    ========================================================================== */
 
 @media (min-width: 1600px) {
-
     .main-workspace {
-
         padding: 40px 50px;
     }
 
     .content-grid {
-
         gap: 40px;
     }
 
     .app-card {
-
         padding: 40px;
     }
 
     .title-area h1 {
-
         font-size: 2.5rem;
     }
 }
