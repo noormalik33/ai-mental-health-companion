@@ -3,7 +3,7 @@ import joblib
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from transformers import pipeline  # <--- Added for Deep Learning Model
+from transformers import pipeline
 
 app = FastAPI(title="AI Mental Health Companion API")
 
@@ -22,7 +22,7 @@ PREDICTOR_MODEL_PATH = os.path.join(BASE_DIR, "models", "mental_health_model.pkl
 
 # Initialize models as None global variables
 predictor_model = None
-emotion_classifier = None  # <--- BERT Pipeline Object
+emotion_classifier = None
 
 # 1. Load the Risk Predictor Model (Random Forest)
 if os.path.exists(PREDICTOR_MODEL_PATH):
@@ -33,8 +33,7 @@ else:
 
 # 2. Load the Emotion NLP Model using HuggingFace BERT Pipeline
 try:
-    print("⏳ Loading Deep Learning BERT Emotion Model (This may take a few seconds on first boot)...")
-    # Yeh model fine-tune hua hai 6 core emotions par: sadness, joy, love, anger, fear, surprise
+    print("⏳ Loading Deep Learning BERT Emotion Model (This may take a few seconds)...")
     emotion_classifier = pipeline(
         "text-classification", 
         model="bhadresh-savani/distilbert-base-uncased-emotion", 
@@ -68,10 +67,19 @@ def predict_risk(data: AssessmentInput):
         return {"status": "error", "message": "ML Model is not loaded on server."}
     
     try:
+        # 1. Model Prediction chalaein
         features = [[data.age, data.gender, data.anxiety, data.panic_attacks]]
         prediction = predictor_model.predict(features)[0]
         
+        # 2. Base status set karein
         risk_status = "High Risk" if prediction == 1 else "Low Risk"
+        
+        # 🔥 3. Logical Safety Guard (Critical Override for Clinical Safety)
+        # Agar user ko anxiety AUR panic attacks dono hain, to dataset ke small size 
+        # ki wajah se model ko galat predict nahi karne dena, direct High Risk set karna hai.
+        if data.anxiety == 1 and data.panic_attacks == 1:
+            risk_status = "High Risk"
+            
         recommendation = (
             "We notice patterns of high stress. Consider prioritizing restful sleep and practicing deep breathing exercises."
             if risk_status == "High Risk"
@@ -97,13 +105,10 @@ def analyze_journal(data: JournalInput):
         raise HTTPException(status_code=400, detail="Journal text cannot be empty.")
     
     try:
-        # Pass raw text directly to BERT pipeline (No vectorizer needed!)
+        # Pass raw text directly to BERT pipeline
         predictions = emotion_classifier(data.text)
-        
-        # BERT output looks like this: [{'label': 'sadness', 'score': 0.99}]
         detected_emotion = predictions[0]['label']
         
-        # Structure customized coping responses based on predicted emotion
         coping_tips = {
             "sadness": "It's completely okay to feel down. Try jotting down three minor details you feel grateful for right now.",
             "anger": "Take a deep breath. Count slowly backwards from ten before re-evaluating the current situation.",
