@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import './Dashboard.css';
 
-// --- Assets Mapping (Make sure these exist in src/ folder) ---
+// --- Assets Mapping (Ensure these exist in your src/ folder) ---
 import maleAnimation from './male-avatar.json'; 
 import femaleAnimation from './female-avatar.json';
+import navbarAnalyticsAnimation from './analytics-icon.json'; 
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -42,6 +43,7 @@ export default function App() {
       setRiskResult(data); 
     } catch (err) {
       setRiskError("Backend validation failed or server is offline.");
+      console.error(err);
     } finally {
       setRiskLoading(false);
     }
@@ -58,6 +60,7 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: journalText })
       });
+      if (!res.ok) throw new Error('Journal analysis failed');
       const data = await res.json();
       setJournalResult(data);
     } catch (err) {
@@ -67,89 +70,108 @@ export default function App() {
     }
   };
 
-  // --- Inline Form JSX Blueprints to prevent losing focus ---
-  const riskFormJSX = (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-      <div style={{ flex: '1' }}>
-        <h3 className="card-title">📋 Risk Assessment Profile</h3>
-        <form onSubmit={handleRiskSubmit}>
+  // --- 🛠️ Render Helpers (Focus & Execution Safe) ---
+  const renderRiskForm = () => {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+        <div style={{ flex: '1' }}>
+          <h3 className="card-title">📋 Risk Assessment Profile</h3>
+          <form onSubmit={handleRiskSubmit}>
+            <div className="field-group">
+              <label>Full Name</label>
+              <input 
+                type="text" required className="text-input" placeholder="Enter your name"
+                value={riskData.name} onChange={(e) => setRiskData({...riskData, name: e.target.value})} 
+              />
+            </div>
+            <div className="field-group">
+              <label>Age Vector</label>
+              <input 
+                type="number" required className="text-input" placeholder="e.g. 24"
+                value={riskData.age} onChange={(e) => setRiskData({...riskData, age: e.target.value})} 
+              />
+            </div>
+            <div className="field-group">
+              <label>Biological Gender</label>
+              <select className="select-dropdown" value={riskData.gender} onChange={(e) => setRiskData({...riskData, gender: e.target.value})}>
+                <option value="0">Female</option>
+                <option value="1">Male</option>
+              </select>
+            </div>
+            <div className="field-group">
+              <label>Experiencing Clinical Anxiety?</label>
+              <select className="select-dropdown" value={riskData.anxiety} onChange={(e) => setRiskData({...riskData, anxiety: e.target.value})}>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+            <div className="field-group">
+              <label>Frequent Panic Attacks?</label>
+              <select className="select-dropdown" value={riskData.panic_attacks} onChange={(e) => setRiskData({...riskData, panic_attacks: e.target.value})}>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+            <button type="submit" className="submit-btn" disabled={riskLoading}>
+              <span>🧠</span> {riskLoading ? "Querying ML Model..." : "Analyze Profile"}
+            </button>
+          </form>
+          
+          {riskError && (
+            <div className="output-node" style={{ borderLeft: '5px solid #EF4444', color: '#EF4444', marginTop: '20px' }}>
+              {riskError}
+            </div>
+          )}
+
+          {riskResult && (
+            <div className="output-node" style={{ borderLeft: riskResult.predicted_risk === 'High Risk' ? '6px solid var(--accent)' : '6px solid #22C55E', marginTop: '20px' }}>
+              <div className="output-header" style={{ color: riskResult.predicted_risk === 'High Risk' ? 'var(--accent)' : '#22C55E' }}>
+                Patient: {riskData.name || 'Anonymous'} — Result: {riskResult.predicted_risk}
+              </div>
+              <p className="output-desc">{riskResult.recommendation}</p>
+            </div>
+          )}
+        </div>
+        
+        <div style={{ width: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingLeft: '30px', marginTop: '20px' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '10px', textAlign: 'center', letterSpacing: '0.5px' }}>
+            👤 {riskData.name ? `${riskData.name}'s Avatar` : "Live Avatar State"}
+          </span>
+          <Player autoplay loop src={riskData.gender === '1' ? maleAnimation : femaleAnimation} style={{ height: '200px', width: '200px' }} />
+        </div>
+      </div>
+    );
+  };
+
+  const renderJournalForm = () => {
+    return (
+      <div>
+        <h3 className="card-title">📝 Text Semantic Journal</h3>
+        <form onSubmit={handleJournalSubmit}>
           <div className="field-group">
-            <label>Full Name</label>
-            <input 
-              type="text" 
-              required 
-              className="text-input" 
-              placeholder="Enter your name"
-              value={riskData.name} 
-              onChange={(e) => setRiskData({...riskData, name: e.target.value})} 
+            <label>Daily Thought Narrative</label>
+            <textarea 
+              className="textarea-input" required 
+              placeholder="Type out your thoughts, narrative, or emotional reflections here..." 
+              value={journalText} onChange={(e) => setJournalText(e.target.value)} 
             />
           </div>
-          <div className="field-group">
-            <label>Age Vector</label>
-            <input 
-              type="number" 
-              required 
-              className="text-input" 
-              placeholder="e.g. 24"
-              value={riskData.age} 
-              onChange={(e) => setRiskData({...riskData, age: e.target.value})} 
-            />
-          </div>
-          <div className="field-group">
-            <label>Biological Gender</label>
-            <select className="select-dropdown" value={riskData.gender} onChange={(e) => setRiskData({...riskData, gender: e.target.value})}>
-              <option value="0">Female</option>
-              <option value="1">Male</option>
-            </select>
-          </div>
-          <div className="field-group">
-            <label>Experiencing Clinical Anxiety?</label>
-            <select className="select-dropdown" value={riskData.anxiety} onChange={(e) => setRiskData({...riskData, anxiety: e.target.value})}>
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div className="field-group">
-            <label>Frequent Panic Attacks?</label>
-            <select className="select-dropdown" value={riskData.panic_attacks} onChange={(e) => setRiskData({...riskData, panic_attacks: e.target.value})}>
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <button type="submit" className="submit-btn" disabled={riskLoading}>
-            <span>🧠</span> {riskLoading ? "Querying ML Model..." : "Analyze Profile"}
+          <button type="submit" className="submit-btn" disabled={journalLoading || !journalText.trim()}>
+            <span>🚀</span> {journalLoading ? "Extracting Layers..." : "Analyze Sentiment Context"}
           </button>
         </form>
-      </div>
-      <div style={{ width: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingLeft: '30px', marginTop: '20px' }}>
-        <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '10px', textAlign: 'center', letterSpacing: '0.5px' }}>
-          👤 {riskData.name ? `${riskData.name}'s Avatar` : "Live Avatar State"}
-        </span>
-        <Player autoplay loop src={riskData.gender === '1' ? maleAnimation : femaleAnimation} style={{ height: '200px', width: '200px' }} />
-      </div>
-    </div>
-  );
 
-  const journalFormJSX = (
-    <div>
-      <h3 className="card-title">📝 Text Semantic Journal</h3>
-      <form onSubmit={handleJournalSubmit}>
-        <div className="field-group">
-          <label>Daily Thought Narrative</label>
-          <textarea 
-            className="textarea-input" 
-            required 
-            placeholder="Type out your thoughts, narrative, or emotional reflections here..." 
-            value={journalText} 
-            onChange={(e) => setJournalText(e.target.value)} 
-          />
-        </div>
-        <button type="submit" className="submit-btn" disabled={journalLoading || !journalText.trim()}>
-          <span>🚀</span> {journalLoading ? "Extracting Layers..." : "Analyze Sentiment Context"}
-        </button>
-      </form>
-    </div>
-  );
+        {journalResult && (
+          <div className="output-node" style={{ borderLeft: '6px solid var(--primary)', marginTop: '20px' }}>
+            <div className="output-header" style={{ color: 'var(--primary)' }}>
+              Detected Emotion: {journalResult.emotion}
+            </div>
+            <p className="output-desc"><strong>Coping Strategy:</strong> {journalResult.coping_strategy}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="dashboard-wrapper">
@@ -174,6 +196,8 @@ export default function App() {
 
       {/* ========================== MAIN WORKSPACE ========================== */}
       <main className="main-workspace">
+        
+        {/* Top Navbar Row */}
         <div className="top-navbar">
           <div className="title-area">
             <h1>AI Mental Health Dashboard</h1>
@@ -181,28 +205,26 @@ export default function App() {
               Developed by <strong style={{ color: 'var(--primary)', fontWeight: '700' }}>Ghulam Qadir</strong> & <strong style={{ color: 'var(--primary)', fontWeight: '700' }}>Noor Malik</strong>
             </p>
           </div>
-          <div className="badge-row"><div className="top-badge">● {activeTab} View</div><div className="top-badge">⚡ Core Engine: FastAPI</div></div>
+          
+          <div className="badge-row" style={{ display: 'flex', alignItems: 'center' }}>
+            <Player autoplay loop src={navbarAnalyticsAnimation} style={{ height: '75px', width: '75px' }} />
+          </div>
         </div>
 
         {/* --- Dynamic Content Router --- */}
-        
         {activeTab === 'Dashboard' && (
           <div className="content-grid">
-            <section className="app-card">{riskFormJSX}</section>
-            <section className="app-card">{journalFormJSX}</section>
+            <section className="app-card">{renderRiskForm()}</section>
+            <section className="app-card">{renderJournalForm()}</section>
           </div>
         )}
 
         {activeTab === 'Risk Assessment' && (
-          <div style={{ width: '100%' }}>
-            <section className="app-card">{riskFormJSX}</section>
-          </div>
+          <div style={{ width: '100%' }}><section className="app-card">{renderRiskForm()}</section></div>
         )}
 
         {activeTab === 'Journal Analysis' && (
-          <div style={{ width: '100%' }}>
-            <section className="app-card">{journalFormJSX}</section>
-          </div>
+          <div style={{ width: '100%' }}><section className="app-card">{renderJournalForm()}</section></div>
         )}
 
         {activeTab === 'Insights Logs' && (
