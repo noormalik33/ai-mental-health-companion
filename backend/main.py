@@ -3,6 +3,7 @@ import joblib
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from transformers import pipeline  # <--- Added for Deep Learning Model
 
 app = FastAPI(title="AI Mental Health Companion API")
 
@@ -18,28 +19,30 @@ app.add_middleware(
 # Define directories and absolute file paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PREDICTOR_MODEL_PATH = os.path.join(BASE_DIR, "models", "mental_health_model.pkl")
-NLP_MODEL_PATH = os.path.join(BASE_DIR, "models", "emotion_nlp_model.pkl")
-VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "emotion_vectorizer.pkl")
 
 # Initialize models as None global variables
 predictor_model = None
-nlp_model = None
-vectorizer = None
+emotion_classifier = None  # <--- BERT Pipeline Object
 
-# 1. Load the Risk Predictor Model
+# 1. Load the Risk Predictor Model (Random Forest)
 if os.path.exists(PREDICTOR_MODEL_PATH):
     predictor_model = joblib.load(PREDICTOR_MODEL_PATH)
     print("🧠 Mental Health Predictor Model loaded successfully!")
 else:
     print("⚠️ Warning: mental_health_model.pkl not found.")
 
-# 2. Load the Emotion NLP Model and Vectorizer
-if os.path.exists(NLP_MODEL_PATH) and os.path.exists(VECTORIZER_PATH):
-    nlp_model = joblib.load(NLP_MODEL_PATH)
-    vectorizer = joblib.load(VECTORIZER_PATH)
-    print("📝 Journal Emotion NLP Model and Vectorizer loaded successfully!")
-else:
-    print("⚠️ Warning: Emotion NLP binaries missing.")
+# 2. Load the Emotion NLP Model using HuggingFace BERT Pipeline
+try:
+    print("⏳ Loading Deep Learning BERT Emotion Model (This may take a few seconds on first boot)...")
+    # Yeh model fine-tune hua hai 6 core emotions par: sadness, joy, love, anger, fear, surprise
+    emotion_classifier = pipeline(
+        "text-classification", 
+        model="bhadresh-savani/distilbert-base-uncased-emotion", 
+        return_all_scores=False
+    )
+    print("🚀 BERT Emotion Model Loaded Successfully!")
+except Exception as e:
+    print(f"⚠️ Warning: Failed to load BERT model. Error: {str(e)}")
 
 
 # --- Request/Response Pydantic Schemas ---
@@ -83,20 +86,22 @@ def predict_risk(data: AssessmentInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# --- Endpoint 2: Journal Emotion NLP Analyzer ---
+
+# --- Endpoint 2: Journal Emotion NLP Analyzer (BERT Integrated) ---
 @app.post("/api/analyze-journal")
 def analyze_journal(data: JournalInput):
-    if nlp_model is None or vectorizer is None:
-        return {"status": "error", "message": "Emotion NLP Model is not loaded on server."}
+    if emotion_classifier is None:
+        return {"status": "error", "message": "Deep Learning BERT Model is not loaded on server."}
     
     if not data.text.strip():
         raise HTTPException(status_code=400, detail="Journal text cannot be empty.")
     
     try:
-        # Vectorize input raw text
-        text_vec = vectorizer.transform([data.text])
-        # Predict the underlying emotion string
-        detected_emotion = nlp_model.predict(text_vec)[0]
+        # Pass raw text directly to BERT pipeline (No vectorizer needed!)
+        predictions = emotion_classifier(data.text)
+        
+        # BERT output looks like this: [{'label': 'sadness', 'score': 0.99}]
+        detected_emotion = predictions[0]['label']
         
         # Structure customized coping responses based on predicted emotion
         coping_tips = {
@@ -110,7 +115,6 @@ def analyze_journal(data: JournalInput):
         
         feedback = coping_tips.get(detected_emotion, "Thank you for documenting your thoughts. Keep reflecting regularly.")
         
-        # FIXED: Added the missing return statement
         return {
             "status": "success",
             "detected_emotion": detected_emotion,
