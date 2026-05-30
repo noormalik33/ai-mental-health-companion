@@ -7,6 +7,13 @@ import maleAnimation from './male-avatar.json';
 import femaleAnimation from './female-avatar.json';
 import navbarAnalyticsAnimation from './analytics-icon.json'; 
 
+// --- UPDATED: Result Lottie Animations ---
+// In JSON files ke original naam aur paths apke project ke hisab se change honge
+import highRiskAnimation from './high-risk-alert.json'; 
+import lowRiskAnimation from './low-risk-check.json';
+import highStressJournalAnimation from './high-stress-emotional.json';
+import calmJournalAnimation from './calm-peaceful.json';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('Dashboard');
 
@@ -70,7 +77,7 @@ export default function App() {
     }
   };
 
-  // --- 🛠️ Render Helpers (Focus & Execution Safe) ---
+  // --- 🛠️ Render Helpers (Focus, Execution, and Animation Safe) ---
   const renderRiskForm = () => {
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
@@ -129,6 +136,16 @@ export default function App() {
                 Patient: {riskData.name || 'Anonymous'} — Result: {riskResult.predicted_risk}
               </div>
               <p className="output-desc">{riskResult.recommendation}</p>
+              
+              {/* --- NEW: Dynamic Risk Result Lottie Animation --- */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+                <Player 
+                  autoplay 
+                  loop 
+                  src={riskResult.predicted_risk === 'High Risk' ? highRiskAnimation : lowRiskAnimation} 
+                  style={{ height: '100px', width: '100px' }} 
+                />
+              </div>
             </div>
           )}
         </div>
@@ -167,6 +184,18 @@ export default function App() {
               Detected Emotion: {journalResult.emotion}
             </div>
             <p className="output-desc"><strong>Coping Strategy:</strong> {journalResult.coping_strategy}</p>
+            
+            {/* --- NEW: Dynamic Journal Result Lottie Animation --- */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+              <Player 
+                autoplay 
+                loop 
+                // Yahan apke FastAPI backend ke emotional category mapping ke mutabiq condition change hogi
+                // Misaal ke taur par: Agar 'Depression' ya 'Anxiety' detected ho
+                src={journalResult.emotion === 'Depression' || journalResult.emotion === 'Anxiety' ? highStressJournalAnimation : calmJournalAnimation} 
+                style={{ height: '100px', width: '100px' }} 
+              />
+            </div>
           </div>
         )}
       </div>
@@ -232,7 +261,7 @@ export default function App() {
         )}
         
         {activeTab === 'Settings' && (
-          <div className="app-card"><h3>⚙️ System Settings</h3><p style={{color: 'var(--text-secondary)'}}>Manage endpoints and algorithm parameters.</p></div>
+          <div className="app-card"><h3>⚙️ System Core Settings</h3><p style={{color: 'var(--text-secondary)'}}>Manage endpoints and algorithm parameters.</p></div>
         )}
       </main>
     </div>
