@@ -410,7 +410,7 @@ Add your video link inside:
 OR
 
 ```md
-[Watch Demo Video](PASTE_YOUR_VIDEO_LINK_HERE)
+[Watch Demo Video](https://youtu.be/2wdGdhQydFM)
 ```
 
 ---
@@ -422,9 +422,9 @@ OR
 ## ♥️ Noor Malik
 
 * 📧 Email: [noormalik56500@gmail.com](mailto:noormalik56500@gmail.com)
-* 💼 LinkedIn: [Noor Malik LinkedIn](https://www.linkedin.com/in/noormalik56500?utm_source=chatgpt.com)
-* 🌐 Portfolio: [Noor Malik Portfolio](https://noor-malik-portfolio.netlify.app/?utm_source=chatgpt.com)
-* 💻 GitHub: [Noor Malik GitHub](https://github.com/noormalik33?utm_source=chatgpt.com)
+* 💼 LinkedIn: [https://www.linkedin.com/in/noormalik56500](https://www.linkedin.com/in/noormalik56500)
+* 🌐 Portfolio: [Noor Malik Portfolio](https://noor-malik-portfolio.netlify.app/)
+* 💻 GitHub: [Noor Malik GitHub](https://github.com/noormalik33)
 
 ---
 
