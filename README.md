@@ -413,19 +413,19 @@ https://youtu.be/2wdGdhQydFM
 
 ## ♥️ Noor Malik
 
-📧 Email: noormalik56500@gmail.com
-💼 LinkedIn: https://www.linkedin.com/in/noormalik56500/
-🌐 Portfolio: https://noor-malik-portfolio.netlify.app/
-💻 GitHub: https://github.com/noormalik33
+📧 Email: noormalik56500@gmail.com 
+💼 LinkedIn: https://www.linkedin.com/in/noormalik56500/ 
+🌐 Portfolio: https://noor-malik-portfolio.netlify.app/ 
+💻 GitHub: https://github.com/noormalik33 
 
 ---
 
 ## ♥️ Ghulam Qadir
 
 📧 Email: gqitspecialist@gmail.com
-💼 LinkedIn: https://www.linkedin.com/in/ghulam-qadir-07a982365/
-🌐 Portfolio: https://ghulamqadir.netlify.app
-💻 GitHub: https://github.com/G-Qadir9988
+💼 LinkedIn: https://www.linkedin.com/in/ghulam-qadir-07a982365/ 
+🌐 Portfolio: https://ghulamqadir.netlify.app 
+💻 GitHub: https://github.com/G-Qadir9988 
 
 ---
 
@@ -433,9 +433,9 @@ https://youtu.be/2wdGdhQydFM
 
 ## ♥️ CoreIT Tech
 
-📧 Email: coreittech1@gmail.com
-▶️ YouTube: https://www.youtube.com/@CoreITTech1
-📸 Instagram: https://www.instagram.com/coreit.tech
+📧 Email: coreittech1@gmail.com 
+▶️ YouTube: https://www.youtube.com/@CoreITTech1 
+📸 Instagram: https://www.instagram.com/coreit.tech 
 
 ---
 
