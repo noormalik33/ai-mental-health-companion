@@ -401,14 +401,6 @@ jupyter lab
 
 ## 📹 Demo Video Link
 
-Add your video link inside:
-
-```bash
-./demo/video demo link.txt
-```
-
-OR
-
 ```md
 [Watch Demo Video](https://youtu.be/2wdGdhQydFM)
 ```
@@ -422,18 +414,18 @@ OR
 ## ♥️ Noor Malik
 
 * 📧 Email: [noormalik56500@gmail.com](mailto:noormalik56500@gmail.com)
-* 💼 LinkedIn: [https://www.linkedin.com/in/noormalik56500](https://www.linkedin.com/in/noormalik56500)
-* 🌐 Portfolio: [Noor Malik Portfolio](https://noor-malik-portfolio.netlify.app/)
-* 💻 GitHub: [Noor Malik GitHub](https://github.com/noormalik33)
+* 💼 LinkedIn: [https://www.linkedin.com/in/noormalik56500/](https://www.linkedin.com/in/noormalik56500/)
+* 🌐 Portfolio: [https://noor-malik-portfolio.netlify.app/](https://noor-malik-portfolio.netlify.app/)
+* 💻 GitHub: [https://github.com/noormalik33](https://github.com/noormalik33)
 
 ---
 
 ## ♥️ Ghulam Qadir
 
 * 📧 Email: [gqitspecialist@gmail.com](mailto:gqitspecialist@gmail.com)
-* 💼 LinkedIn: [Ghulam Qadir LinkedIn](https://www.linkedin.com/in/ghulam-qadir-07a982365?utm_source=chatgpt.com)
-* 🌐 Portfolio: [Ghulam Qadir Portfolio](https://ghulamqadir.netlify.app?utm_source=chatgpt.com)
-* 💻 GitHub: [Ghulam Qadir GitHub](https://github.com/G-Qadir9988?utm_source=chatgpt.com)
+* 💼 LinkedIn: [https://www.linkedin.com/in/ghulam-qadir-07a982365/](https://www.linkedin.com/in/ghulam-qadir-07a982365/)
+* 🌐 Portfolio: [https://ghulamqadir.netlify.app](https://ghulamqadir.netlify.app)
+* 💻 GitHub: [https://github.com/G-Qadir9988](https://github.com/G-Qadir9988)
 
 ---
 
