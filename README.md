@@ -96,19 +96,27 @@ This project combines:
 
 ```bash
 ai-mental-health-companion/
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
 ├── backend/
+│   ├── .ipynb_checkpoints/
+│   ├── __pycache__/
+│   ├── dataset/
+│   │   ├── Emotions dataset for NLP/
+│   │   │   ├── test.txt
+│   │   │   ├── train.txt
+│   │   │   └── val.txt
+│   │   └── Student Mental health/
+│   │       └── Student Mental health.csv
+│   ├── models/
+│   ├── venv/
+│   ├── .gitkeep
+│   ├── emotion_nlp_model.pkl
+│   ├── emotion_vectorizer.pkl
 │   ├── main.py
-│   ├── train_predictor.py
 │   ├── train_emotion_nlp.py
-│   └── models/
+│   └── train_predictor.py
 │
 ├── demo/
+│   ├── .gitkeep
 │   ├── dashboard.jpeg
 │   ├── detected_emotions.jpeg
 │   ├── developers_info.jpeg
@@ -117,8 +125,37 @@ ai-mental-health-companion/
 │   ├── risk_assessment_profile_1.jpeg
 │   ├── risk_assessment_profile_2.jpeg
 │   ├── settings.jpeg
-│   └── tech_community_and_content_channels.jpeg
+│   ├── tech_community_and_content_channels.jpeg
+│   ├── video demo link.txt
+│   └── Video Project 1.mp4
 │
+├── frontend/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   └── vite.config.js
+│
+├── notebooks/
+│   ├── .ipynb_checkpoints/
+│   ├── .gitkeep
+│   ├── Journal_Text_Analysis.ipynb
+│   └── Student_Mental_Health_Analysis.ipynb
+│
+├── report/
+│   ├── .gitkeep
+│   ├── AI Mental Health report.docx
+│   └── AI Mental Health report.pdf
+│
+├── .gitattributes
+├── .gitignore
+├── LICENSE
+├── package-lock.json
 └── README.md
 ```
 
