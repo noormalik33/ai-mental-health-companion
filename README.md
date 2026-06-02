@@ -40,7 +40,7 @@ This project combines:
 * **Backend:** FastAPI
 * **Machine Learning:** Scikit-learn
 * **NLP Models:** Transformers / BERT / RoBERTa
-* **Database:** MongoDB
+* **Database:** Firebase
 * **Visualization:** Matplotlib, Seaborn
 * **Model Training:** Python
 
@@ -86,7 +86,7 @@ This project combines:
 | Scikit-learn         | Machine Learning    |
 | Transformers         | NLP Models          |
 | PyTorch              | Deep Learning       |
-| MongoDB              | Database            |
+| Firebase             | Database            |
 | Pandas & NumPy       | Data Processing     |
 | Matplotlib & Seaborn | Visualization       |
 
@@ -448,7 +448,7 @@ https://youtu.be/2wdGdhQydFM
 
 ---
 
-## ♥️ Noor Malik
+## Noor Malik
 
 * 📧 Email: noormalik56500@gmail.com
 * 💼 LinkedIn: https://www.linkedin.com/in/noormalik56500/
@@ -457,7 +457,7 @@ https://youtu.be/2wdGdhQydFM
 
 ---
 
-## ♥️ Ghulam Qadir
+## Ghulam Qadir
 
 * 📧 Email: gqitspecialist@gmail.com
 * 💼 LinkedIn: https://www.linkedin.com/in/ghulam-qadir-07a982365/
@@ -468,7 +468,7 @@ https://youtu.be/2wdGdhQydFM
 
 # 🌟 Community & Support
 
-## ♥️ CoreIT Tech
+## CoreIT Tech
 
 * 📧 Email: coreittech1@gmail.com
 * ▶️ YouTube: https://www.youtube.com/@CoreITTech1
@@ -498,7 +498,7 @@ Educational & Research Purposes Only.
 
 ---
 
-# ❤️ Acknowledgement
+# Acknowledgement
 
 Special thanks to our mentors, instructors, teammates, and the AI research community for supporting this project.
 
@@ -508,6 +508,6 @@ Special thanks to our mentors, instructors, teammates, and the AI research commu
 
 # 🌟 Thank You For Visiting Our Project 🌟
 
-### Made with ❤️ using AI, React, FastAPI & Machine Learning
+### Made using AI, React, FastAPI & Machine Learning
 
 </div>
